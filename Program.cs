@@ -3,6 +3,8 @@ using AiEngineering.RAG.Services.Embeddings;
 using AiEngineering.RAG.Services.RAG;
 using AiEngineering.RAG.Services.RAG.VectorStore;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
+using Pinecone;
 using OpenAI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<VectorStoreOptions>(builder.Configuration.GetSection("VectorStore"));
+
+// Register Pinecone client using configured options so it can be injected and
+// mocked in tests. The PineconeClient is thin and thread-safe according to the
+// SDK; register as singleton.
+builder.Services.AddSingleton(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<VectorStoreOptions>>().Value;
+    return new PineconeClient(options.ApiKey);
+});
 
 
 // --------------------------------------------------
@@ -94,7 +105,6 @@ builder.Services.AddScoped<IDocumentIndexer, DocumentIndexer>();
 // --------------------------------------------------
 
 var app = builder.Build();
-
 // --------------------------------------------------
 // HTTP Request Pipeline
 // --------------------------------------------------

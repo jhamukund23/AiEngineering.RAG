@@ -1,7 +1,9 @@
-﻿using AiEngineering.RAG.Models.RAG;
+using AiEngineering.RAG.Models.RAG;
 using AiEngineering.RAG.Prompts.RAG;
 using AiEngineering.RAG.Services.RAG.VectorStore;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AiEngineering.RAG.Services.RAG;
@@ -9,7 +11,8 @@ namespace AiEngineering.RAG.Services.RAG;
 public sealed class RagService(
     IChatClient chatClient,
     IEmbeddingService embeddingService,
-    IVectorStore vectorStore) : IRagService
+    IVectorStore vectorStore,
+    ILogger<RagService> logger) : IRagService
 {
     private const int TopK = 5;
     private const double SimilarityThreshold = 0.50;
@@ -23,10 +26,18 @@ public sealed class RagService(
     private readonly IVectorStore _vectorStore =
         vectorStore;
 
+    private readonly ILogger<RagService> _logger = logger;
+
     public async Task<RagResponse> AskAsync(
         string question,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(question))
+        {
+            throw new ArgumentException("Question must be provided.", nameof(question));
+        }
+
+        _logger.LogInformation("Processing RAG question (length={Length})", question.Length);
         // 1. Convert question into embedding
         var questionEmbedding =
             await _embeddingService.GenerateAsync(
@@ -48,10 +59,11 @@ public sealed class RagService(
         // 4. No relevant information
         if (relevantResults.Count == 0)
         {
+            _logger.LogInformation("No relevant RAG sources found for question");
             return new RagResponse
             {
-                Answer =
-                    "I don't know based on the available information."
+                Answer = "I don't know based on the available information.",
+                Sources = new List<RagSource>()
             };
         }
 
