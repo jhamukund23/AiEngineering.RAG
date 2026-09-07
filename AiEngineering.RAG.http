@@ -1,0 +1,71 @@
+@baseUrl = https://localhost:7001
+
+
+### Test Case 1 - Standard Shipping
+# Expected: Standard shipping usually takes 5 to 7 business days.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How long does standard shipping take?"
+}
+
+
+### Test Case 2 - Express Shipping
+# Expected: Express shipping usually takes 1 to 2 business days.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How long does express shipping take?"
+}
+
+
+### Test Case 3 - Refund Policy
+# Expected: Customers can request a refund within 30 days.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How many days do I have to request a refund?"
+}
+
+
+### Test Case 4 - Refund Processing
+# Expected: Refunds are normally processed within 5 business days.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How long does a refund take to process?"
+}
+
+
+### Test Case 5 - Change Email
+# Expected: Customers can change their email address from the account settings page.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How can I change my email address?"
+}
+
+
+### Test Case 6 - Password Reset
+# Expected: Password reset links are valid for 30 minutes.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "How long is a password reset link valid?"
+}
+
+
+### Test Case 7 - Information Not Available
+# Expected: I don't know based on the available information.
+POST {{baseUrl}}/api/Rag/ask
+Content-Type: application/json
+
+{
+  "question": "Do you provide international shipping?"
+}

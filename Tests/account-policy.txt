@@ -1,0 +1,3 @@
+Customers can change their email address from the account settings page.
+
+Password reset links are valid for 30 minutes.
